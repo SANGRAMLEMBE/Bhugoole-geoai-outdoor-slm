@@ -139,7 +139,10 @@
   .aqi-badge { font: 700 11px Manrope, sans-serif; padding: 3px 8px; border-radius: 999px; color: #fff; }
   .wind-arrow { width: 26px; height: 26px; transition: transform .6s ease; }
 
-  #map { height: 430px; border-radius: var(--radius); box-shadow: var(--shadow); background: #dfe7e6; }
+  /* the map stretches to the height of the place panel beside it */
+  .g-map { align-items: stretch; }
+  #map { height: auto; min-height: 520px; border-radius: var(--radius); box-shadow: var(--shadow); background: #dfe7e6; }
+  @media (max-width: 900px) { #map { min-height: 380px; } }
   .mk { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; color: #fff; font: 700 12px Manrope, sans-serif;
         border: 2px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
   .mk.best { width: 44px; height: 44px; font-size: 14px; border: 3px solid var(--night); }
@@ -289,7 +292,7 @@ const css = name => getComputedStyle(document.documentElement).getPropertyValue(
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const scoreColor = s => s == null ? "#CBD5D9" : css(SCORE_COLORS.find(([min]) => s >= min)[1]);
 const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/_(.+?)_/g, "<em>$1</em>").replace(/\n/g, "<br>");
-let coords = null, activityNames = {}, map = null, layer = null, stepTimer = null, current = null, markers = [];
+let coords = null, activityNames = {}, map = null, layer = null, stepTimer = null, current = null, markers = [], mapBounds = null;
 
 fetch("activities").then(r => r.json()).then(d => {
   d.supported.forEach(a => activityNames[a.id] = a.name);
@@ -507,6 +510,8 @@ function selectPlace(i, scroll) {
   $("placePanel").innerHTML = placeCard(p, p.name === d.recommendation.place);
   markers.forEach((m, j) => { const el = m.getElement(); if (el) el.querySelector(".mk").classList.toggle("sel", j === i); });
   document.querySelectorAll("table.heat tr[data-place]").forEach(tr => tr.classList.toggle("sel", +tr.dataset.place === i));
+  // the panel's height sets the map's height; keep Leaflet in step with it
+  if (map) { map.invalidateSize(); if (!scroll && mapBounds) map.fitBounds(mapBounds); }
   if (scroll) $("placePanel").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
@@ -562,7 +567,8 @@ function drawMap(d) {
       .on("click", () => selectPlace(i, true))
       .addTo(layer);
   });
-  map.fitBounds(L.latLngBounds(pts).pad(0.15));
+  mapBounds = L.latLngBounds(pts).pad(0.15);
+  map.fitBounds(mapBounds);
 }
 </script>
 </body>

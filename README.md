@@ -140,10 +140,11 @@ Configuration is by environment variable (`app/config.py`): `SLM_BACKEND` (`llam
 **Bhugoole-geoai-outdoor-slm**: a QLoRA fine-tune of `Qwen/Qwen2.5-1.5B-Instruct` (1.54B parameters, Apache-2.0),
 quantised to Q4_K_M GGUF and run with llama.cpp on CPU. It is used for two narrow, checkable jobs: slot extraction
 (JSON-schema-constrained decoding, temperature 0) and answer writing from the fact sheet (temperature 0.3, verified).
-The model never sees the internet and is never asked to recall weather or places. Fine-tuning (`finetune/`): 2,700
-synthetic question → JSON pairs, r=16, 1 epoch. On 30 hand-written real questions (never trained on), through llama.cpp,
-exact slot match rose from 76.7% to 93.3%, and 8/8 answers passed the grounding verifier (base 7/8); see
-`finetune/TRAINING_REPORT.md`.
+The model never sees the internet and is never asked to recall weather or places. Fine-tuning (`finetune/`): 5,700
+synthetic question → JSON pairs, r=16, 1 epoch (version 2, after an error analysis of version 1). Through llama.cpp,
+as the live API runs it, exact slot match on 40 unseen hand-written questions rose from 72.5% (base) to 97.5%, and
+all 6 off-topic requests among them were recognised (base: 1); on the original 30 real questions it rose from 76.7% to
+100%. Neither set was used for training; see `finetune/TRAINING_REPORT.md` and `finetune/eval_parse.py`.
 
 ## Data sources (all free and open, fetched live per question)
 

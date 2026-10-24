@@ -1,0 +1,40 @@
+{"q": "where can i jog near kalyani nagar tomorrow morning", "activity": "running", "location": "kalyani nagar", "radius_km": 0, "profiles": []}
+{"q": "Magarpatta cycling this sunday evening, ok?", "activity": "cycling", "location": "Magarpatta", "radius_km": 0, "profiles": []}
+{"q": "best time for a picnic at Pashan lake this weekend with my kids", "activity": "picnic", "location": "Pashan lake", "radius_km": 0, "profiles": ["child"]}
+{"q": "morning walk on vetal tekdi tmrw, I'm 68", "activity": "walking", "location": "vetal tekdi", "radius_km": 0, "profiles": ["senior"]}
+{"q": "football turf near Ghatkopar tonight?", "activity": "football", "location": "Ghatkopar", "radius_km": 0, "profiles": []}
+{"q": "can we play box cricket in Mulund on saturday afternoon", "activity": "cricket", "location": "Mulund", "radius_km": 0, "profiles": []}
+{"q": "tennis courts around Kandivali East after office", "activity": "tennis", "location": "Kandivali East", "radius_km": 0, "profiles": []}
+{"q": "evening stroll at Worli sea face with my pregnant wife", "activity": "walking", "location": "Worli sea face", "radius_km": 0, "profiles": ["pregnancy"]}
+{"q": "sunrise photography at versova beach day after tomorrow", "activity": "photography", "location": "versova beach", "radius_km": 0, "profiles": []}
+{"q": "trek in Sanjay Gandhi National Park this weekend", "activity": "hiking", "location": "Sanjay Gandhi National Park", "radius_km": 0, "profiles": []}
+{"q": "birding spots within 20 km of Yeoor hills", "activity": "birdwatching", "location": "Yeoor hills", "radius_km": 20, "profiles": []}
+{"q": "golf near Hauz Khas on sunday morning", "activity": "golf", "location": "Hauz Khas", "radius_km": 0, "profiles": []}
+{"q": "picnic at Sunder Nursery tomorrow, my grandmother is coming", "activity": "picnic", "location": "Sunder Nursery", "radius_km": 0, "profiles": ["senior"]}
+{"q": "I have asthma, is running at Nehru Park ok this evening?", "activity": "running", "location": "Nehru Park", "radius_km": 0, "profiles": ["asthma"]}
+{"q": "outdoor birthday party near Cyber Hub on saturday night", "activity": "event", "location": "Cyber Hub", "radius_km": 0, "profiles": []}
+{"q": "hike up Golconda fort this sunday", "activity": "hiking", "location": "Golconda fort", "radius_km": 0, "profiles": []}
+{"q": "jogging in KBR park kal subah", "activity": "running", "location": "KBR park", "radius_km": 0, "profiles": []}
+{"q": "cycle along Necklace Road tonight", "activity": "cycling", "location": "Necklace Road", "radius_km": 0, "profiles": []}
+{"q": "kite flying at elliot's beach this sunday", "activity": "kite", "location": "elliot's beach", "radius_km": 0, "profiles": []}
+{"q": "yoga session in Guindy national park tomorrow 6 am", "activity": "yoga", "location": "Guindy national park", "radius_km": 0, "profiles": []}
+{"q": "my dad has heart problems, can he walk around Ulsoor lake in the evening", "activity": "walking", "location": "Ulsoor lake", "radius_km": 0, "profiles": ["heart"]}
+{"q": "sunset pics at Sankey tank today", "activity": "photography", "location": "Sankey tank", "radius_km": 0, "profiles": []}
+{"q": "cricket practice for my 10 year old near JP Nagar this weekend", "activity": "cricket", "location": "JP Nagar", "radius_km": 0, "profiles": ["child"]}
+{"q": "five-a-side within 10 km of Electronic City friday night", "activity": "football", "location": "Electronic City", "radius_km": 10, "profiles": []}
+{"q": "evening walk at Kankaria lake with my parents", "activity": "walking", "location": "Kankaria lake", "radius_km": 0, "profiles": ["senior"]}
+{"q": "photo walk at Law Garden tomorrow evening", "activity": "photography", "location": "Law Garden", "radius_km": 0, "profiles": []}
+{"q": "stargazing near Rishikesh this week", "activity": "stargazing", "location": "Rishikesh", "radius_km": 0, "profiles": []}
+{"q": "trek to tiger hill darjeeling for sunrise", "activity": "hiking", "location": "tiger hill darjeeling", "radius_km": 0, "profiles": []}
+{"q": "wedding reception on the lawns in Mussoorie on 30th", "activity": "event", "location": "Mussoorie", "radius_km": 0, "profiles": []}
+{"q": "family outing to Gokarna beach next saturday", "activity": "picnic", "location": "Gokarna beach", "radius_km": 0, "profiles": []}
+{"q": "beach run at Varkala cliff tomorrow early", "activity": "running", "location": "Varkala cliff", "radius_km": 0, "profiles": []}
+{"q": "evening cycle ride on the Pondicherry promenade", "activity": "cycling", "location": "Pondicherry promenade", "radius_km": 0, "profiles": []}
+{"q": "is it a good day for a bike ride, I am at Mahabalipuram", "activity": "cycling", "location": "Mahabalipuram", "radius_km": 0, "profiles": []}
+{"q": "walk my dog near Hampi ruins tomorrow evening", "activity": "walking", "location": "Hampi ruins", "radius_km": 0, "profiles": []}
+{"q": "order biryani to Kalyani Nagar", "activity": "out_of_scope", "location": "", "radius_km": 0, "profiles": []}
+{"q": "cheapest hotel in Gokarna for 2 nights", "activity": "out_of_scope", "location": "", "radius_km": 0, "profiles": []}
+{"q": "is there a good dentist near Ghatkopar", "activity": "out_of_scope", "location": "", "radius_km": 0, "profiles": []}
+{"q": "book an ola from Hauz Khas to the airport", "activity": "out_of_scope", "location": "", "radius_km": 0, "profiles": []}
+{"q": "what's the price of gold today", "activity": "out_of_scope", "location": "", "radius_km": 0, "profiles": []}
+{"q": "movie tickets for tonight at a mall in Guindy", "activity": "out_of_scope", "location": "", "radius_km": 0, "profiles": []}

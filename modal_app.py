@@ -18,6 +18,7 @@ import modal
 ROOT = Path(__file__).resolve().parent
 GGUF_REPO = "WIZARDIAN/Bhugoole-geoai-outdoor-slm"
 GGUF_FILE = "bhugoole-geoai-outdoor-slm-q4_k_m.gguf"
+GGUF_REVISION = "144a5f86359b0e7c959596b6a959c1afbd139dfc"  # version 2 of the fine-tune, see finetune/TRAINING_REPORT.md
 CPU = 4
 OSM_DIR = "/data/osm"
 OSM_DB = f"{OSM_DIR}/osm_india.sqlite"
@@ -32,7 +33,7 @@ image = (
                  extra_options="--prefer-binary", env={"CMAKE_ARGS": "-DGGML_NATIVE=OFF"})
     .pip_install("osmium>=4.0")
     .run_commands(f"python -c \"from huggingface_hub import hf_hub_download as d; "
-                  f"d('{GGUF_REPO}', '{GGUF_FILE}', local_dir='/models')\"")
+                  f"d('{GGUF_REPO}', '{GGUF_FILE}', revision='{GGUF_REVISION}', local_dir='/models')\"")
     .env({"SLM_BACKEND": "llamacpp", "SLM_GGUF_PATH": f"/models/{GGUF_FILE}", "SLM_GGUF_REPO": GGUF_REPO,
           "SLM_GGUF_FILE": GGUF_FILE, "SLM_THREADS": str(CPU), "PYTHONUNBUFFERED": "1"})
     .add_local_dir(ROOT / "app", "/root/app", ignore=["**/__pycache__/**", "**/*.pyc"])

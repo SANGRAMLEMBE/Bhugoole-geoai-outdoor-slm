@@ -25,16 +25,19 @@ from peft import LoraConfig, PeftModel, get_peft_model, prepare_model_for_kbit_t
 from transformers import (AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, Trainer, TrainingArguments)
 
 BASE = "Qwen/Qwen2.5-1.5B-Instruct"
-REAL_EVAL = Path(__file__).parent / "real_eval.jsonl"  # hand-written questions, not from the generator
+# Hand-written questions, never produced by the generator: the 30 used to analyse version 1's errors,
+# and 40 with unseen places and phrasings written before version 2 was trained
+REAL_EVAL = Path(__file__).parent / "real_eval.jsonl"
+TEST_UNSEEN = Path(__file__).parent / "test_unseen.jsonl"
 
 
-def real_eval_rows() -> list[dict]:
-    """Realistic held-out questions in the same chat format as the synthetic data."""
+def real_eval_rows(path: Path = REAL_EVAL) -> list[dict]:
+    """Hand-written held-out questions in the same chat format as the synthetic data."""
     import sys
     sys.path.insert(0, str(Path(__file__).parent))
     from make_parse_dataset import to_chat
     rows = []
-    for line in REAL_EVAL.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         if line.strip():
             r = json.loads(line)
             rows.append(to_chat(r["q"], {k: r[k] for k in ("activity", "location", "radius_km", "profiles")}))
@@ -105,6 +108,7 @@ def main():
     ds = load_dataset("json", data_files={"train": f"{a.data}/train.jsonl", "eval": f"{a.data}/eval.jsonl"})
     eval_rows = list(ds["eval"])[: a.eval_n]
     real_rows = real_eval_rows()
+    unseen_rows = real_eval_rows(TEST_UNSEEN)
 
     fp16 = not torch.cuda.is_bf16_supported()
     bnb = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True,
@@ -113,7 +117,8 @@ def main():
     t0 = time.time()
     base_scores = evaluate(model, tok, eval_rows)
     base_real = evaluate(model, tok, real_rows)
-    print("base:", base_scores, "real:", base_real)
+    base_unseen = evaluate(model, tok, unseen_rows)
+    print("base:", base_scores, "real:", base_real, "unseen:", base_unseen)
 
     model = prepare_model_for_kbit_training(model)
     model = get_peft_model(model, LoraConfig(r=16, lora_alpha=32, lora_dropout=0.05, task_type="CAUSAL_LM",
@@ -133,7 +138,8 @@ def main():
     tok.save_pretrained(out / "adapter")
     tuned_scores = evaluate(model, tok, eval_rows)
     tuned_real = evaluate(model, tok, real_rows)
-    print("fine-tuned:", tuned_scores, "real:", tuned_real)
+    tuned_unseen = evaluate(model, tok, unseen_rows)
+    print("fine-tuned:", tuned_scores, "real:", tuned_real, "unseen:", tuned_unseen)
 
     # Merge into full-precision weights (for from_pretrained and for GGUF conversion)
     del model
@@ -153,13 +159,18 @@ def main():
   {a.epochs} epoch(s), learning rate {a.lr}, effective batch 16, loss on the JSON answer only.
 * Hardware: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU'}; wall time {(time.time() - t0) / 60:.0f} min.
 
-| Metric | Base, synthetic held-out ({len(eval_rows)}) | Fine-tuned, synthetic | Base, real questions ({len(real_rows)}) | Fine-tuned, real |
-|---|---|---|---|---|
+Scores below come from this script (transformers, 4-bit, greedy decoding); see the end of this file for the
+live API's path (llama.cpp, JSON-schema decoding).
+
+| Metric | Synthetic held-out ({len(eval_rows)}): base | fine-tuned | Real questions ({len(real_rows)}): base | fine-tuned | Unseen test ({len(unseen_rows)}): base | fine-tuned |
+|---|---|---|---|---|---|---|
 """ + "\n".join(f"| {k.replace('_', ' ')} | {base_scores[k]:.1%} | {tuned_scores[k]:.1%} | {base_real[k]:.1%} | "
-                f"{tuned_real[k]:.1%} |" for k in base_scores) + """
+                f"{tuned_real[k]:.1%} | {base_unseen[k]:.1%} | {tuned_unseen[k]:.1%} |" for k in base_scores) + """
 
 The synthetic held-out set comes from the same templates as the training data, so it is optimistic.
-The real-question set (`finetune/real_eval.jsonl`) is hand-written and never used for training.
+`finetune/real_eval.jsonl` (30) and `finetune/test_unseen.jsonl` (40) are hand-written and never used for
+training; the unseen set was written before this version was trained, with places and phrasings the generator
+does not use.
 """
     (Path(__file__).parent / "TRAINING_REPORT.md").write_text(report, encoding="utf-8")
     print(report)

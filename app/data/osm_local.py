@@ -133,7 +133,8 @@ class LocalOSM:
 
     @property
     def source_name(self) -> str:
-        return f"OpenStreetMap extract from Geofabrik, data of {self.meta.get('data_date', 'unknown date')} (offline fallback)"
+        return (f"OpenStreetMap replica of India (rebuilt daily from Geofabrik), "
+                f"data of {self.meta.get('data_date', 'unknown date')}")
 
     def _rows(self, lat: float, lon: float, radius_km: float, kinds: int):
         s, w, n, e = bbox_around(lat, lon, radius_km)

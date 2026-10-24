@@ -121,9 +121,9 @@ pip install -r requirements.txt
 pip install "llama-cpp-python>=0.3.2" --extra-index-url https://abetlen.github.io/llama-cpp-python/whl/cpu
 uvicorn app.main:app --port 7860          # downloads the 1 GB GGUF on first start; UI at http://localhost:7860
 SLM_BACKEND=none uvicorn app.main:app     # template writer only, no model needed
-python scripts/build_osm_fallback.py osm_build/raw/india-latest.osm.pbf   # offline OSM layer (see osm_fallback/)
+python scripts/build_osm_fallback.py osm_build/raw/india-latest.osm.pbf   # OSM replica (see osm_fallback/)
 python scripts/smoke_live.py              # 18 live questions against the real APIs
-pip install -r requirements-dev.txt && pytest   # 44 offline tests with a mocked world (no network needed)
+pip install -r requirements-dev.txt && pytest   # 52 offline tests with a mocked world (no network needed)
 ```
 
 Configuration is by environment variable (`app/config.py`): `SLM_BACKEND` (`llamacpp`, `transformers`, `none`),
@@ -149,8 +149,8 @@ exact slot match rose from 76.7% to 93.3%, and 8/8 answers passed the grounding 
 
 | Source | Used for | Licence / terms | Handling |
 |---|---|---|---|
-| OpenStreetMap via [Overpass API](https://overpass-api.de) (+ maps.mail.ru, kumi.systems, z.overpass-api.de and private.coffee mirrors) | Venues, roads, industry, green cover, water, power lines | ODbL, © OpenStreetMap contributors | One venue query and one batched context query per question; 24 h cache; hedged mirror failover with an 8 s budget (then skipped for 10 min), then the offline layer below |
-| [Geofabrik India extract](https://download.geofabrik.de/asia/india.html) (OSM) | Offline copy of the same venue and context features, used **only when Overpass fails** | ODbL, © OpenStreetMap contributors | Built by `scripts/build_osm_fallback.py` into `osm_fallback/osm_india.sqlite` (R-tree index); answers that use it say so and give its data date |
+| OpenStreetMap via [Overpass API](https://overpass-api.de) (+ maps.mail.ru, kumi.systems, z.overpass-api.de and private.coffee mirrors) | Venues, roads, industry, green cover, water, power lines | ODbL, © OpenStreetMap contributors | One venue query and one batched context query per question; 24 h cache; hedged mirror failover with an 8 s budget (then skipped for 10 min), then our daily OSM replica below |
+| [Geofabrik India extract](https://download.geofabrik.de/asia/india.html) (OSM) | Our OpenStreetMap replica of India with the same venue and context features, queried **when Overpass is overloaded** | ODbL, © OpenStreetMap contributors | Rebuilt every day from Geofabrik's daily extract by `refresh_osm` (`modal_app.py`) with `scripts/build_osm_fallback.py` (SQLite + R-tree); answers that use it say so and give its data date |
 | [Nominatim](https://nominatim.org) (OSM) | Geocoding place names | ODbL; 1 request/s policy | Throttled to < 1/s, identifying User-Agent, 7-day cache |
 | [Photon](https://photon.komoot.io) (OSM) | Geocoding fallback | ODbL | Only if Nominatim fails |
 | [Open-Meteo Forecast API](https://open-meteo.com) | Hourly weather, sunrise/sunset, elevation | CC BY 4.0 | All venues in one request; 15 min cache |
@@ -170,9 +170,10 @@ No paid or private APIs, no API keys, no scraping. Map data © OpenStreetMap con
   set `AQI_USE_MODELLED_O3=1` to include ozone (8-hour mean).
 * **No live traffic.** There is no free, open live-traffic feed for India; OSRM gives free-flow times and we apply a
   disclosed rush-hour multiplier.
-* **Public Overpass servers are often overloaded.** Mirrors are tried in parallel within an 8 s budget; if all fail,
-  places and surroundings come from the offline Geofabrik layer (a day or so older than live OSM), and the answer
-  says so. Weather and air quality are always fetched live.
+* **Public Overpass servers are often overloaded.** In October 2026 they answered "all query workers are busy" or took
+  40-80 s per query. Mirrors are tried in parallel within an 8 s budget; if all fail, places and surroundings come
+  from our OpenStreetMap replica of India, rebuilt every day from Geofabrik's daily extract (at most about a day
+  behind OSM), and the answer says so with the data date. Weather and air quality are always fetched live.
 * **OSM coverage varies.** Unnamed or unmapped grounds can be missed; we widen the search, include the place the user
   named, and say when we fall back to area-level timing advice.
 * **Weather grids are coarse** (several km), so venues close together often share a forecast; the ranking between them
@@ -205,5 +206,5 @@ app/
   static/index.html  demo UI (map + place × hour heatmap)
 finetune/          synthetic data + QLoRA training
 hf/MODEL_CARD.md   model card template        scripts/      deploy, push model, live smoke test
-tests/             44 offline tests (mocked APIs)
+tests/             52 offline tests (mocked APIs)
 ```

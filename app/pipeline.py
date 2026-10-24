@@ -201,9 +201,9 @@ async def _answer(question, lat, lon, location, now, use_slm) -> dict:
         c.elevation_m = wx.elevation
     if travel_src == "estimate":
         notes.append("Routing service was unavailable; travel times are distance-based estimates.")
-    offline = next((e["source"] for e in SOURCE_LOG.get() or [] if e["source"].startswith("OpenStreetMap extract")), None)
-    if offline:
-        notes.append(f"The live Overpass API was unavailable, so places and surroundings come from the {offline}.")
+    replica = next((e["source"] for e in SOURCE_LOG.get() or [] if e["source"].startswith("OpenStreetMap replica")), None)
+    if replica:
+        notes.append(f"The public Overpass servers were busy, so places and surroundings come from our {replica}.")
 
     # ---- score every place x hour ----
     dur = activity.duration_h

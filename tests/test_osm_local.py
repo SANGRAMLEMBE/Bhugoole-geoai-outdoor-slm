@@ -61,8 +61,8 @@ async def test_answers_from_offline_layer_when_overpass_is_down(world, now, offl
     assert res["status"] == "ok", res["answer"]
     assert res["search"]["places_scored"] >= 3                       # several places, not one "general area"
     assert {"Lakeside Garden", "Hill Park"} <= {p["name"] for p in res["heatmap"]["places"]}
-    assert any(s["source"].startswith("OpenStreetMap extract") for s in res["sources"])
-    assert any("Overpass API was unavailable" in n for n in res["notes"])
+    assert any(s["source"].startswith("OpenStreetMap replica") for s in res["sources"])
+    assert any("Overpass servers were busy" in n for n in res["notes"])
     assert res["grounding"]["verified"]
 
 
@@ -80,4 +80,4 @@ async def test_offline_context_has_roads_industry_water(world, offline_db):
 
 async def test_live_overpass_still_preferred(world, now, offline_db):
     res = await answer("Where can I go running tomorrow evening near Powai?", now=now, use_slm=False)
-    assert not any(s["source"].startswith("OpenStreetMap extract") for s in res["sources"])
+    assert not any(s["source"].startswith("OpenStreetMap replica") for s in res["sources"])

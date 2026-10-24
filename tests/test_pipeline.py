@@ -20,6 +20,8 @@ async def test_examples_end_to_end(world, now, q):
     assert rec["place"] and rec["start"] and 0 <= rec["score"] <= 100
     names = {p["name"] for p in res["heatmap"]["places"]}
     assert rec["place"] in names                         # never a place we did not fetch
+    for p in res["heatmap"]["places"]:                   # every place carries its own surroundings and best slot
+        assert "green_cover_500m_pct" in p["context"] and (p["best"] is None or p["best"]["place"] == p["name"])
     assert res["prepare"] and res["watch_for"] and res["sources"]
     assert any("Open-Meteo" in s["source"] for s in res["sources"])
 

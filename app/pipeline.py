@@ -249,7 +249,7 @@ async def _answer(question, lat, lon, location, now, use_slm) -> dict:
         "activity": activity, "profile": profile, "q": q, "origin": origin, "place_label": place_label,
         "radius_km": radius, "best": best, "alternatives": alternatives, "specific": specific,
         "same_place": best_time_same_place, "day_best": day_best, "hours": hours, "cells": cells,
-        "cands": cands, "sun": sun, "notes": notes, "now": now,
+        "cands": cands, "sun": sun, "notes": notes, "now": now, "per_place": per_place,
         "avoid": avoid_ranges(cells[best.place.key], hours, exclude={c.time for c in best.hours}),
         "why": _merge_why(contrast_reasons(best, cells[best.place.key], hours, alternatives), why_bullets(best)),
     }
@@ -278,14 +278,33 @@ def _session_json(s, why=None) -> dict:
     }
 
 
+def _context_json(place) -> dict:
+    """Roads, industry, green cover and water around one place, as fetched for this answer."""
+    ctx = place.context
+    water = ctx.nearest_water() if ctx else None
+    return {
+        "roads_within_1km": [{"name": x.name, "class": x.highway, "distance_m": round(x.distance_km * 1000),
+                              "direction": x.bearing} for x in (ctx.roads if ctx else [])],
+        "industry_within_3km": [{"name": x.name, "distance_km": round(x.distance_km, 2)} for x in (ctx.industry if ctx else [])],
+        "green_cover_500m_pct": round(ctx.green_fraction * 100) if ctx else None,
+        "nearest_water": {"name": water.name, "distance_m": round(water.distance_km * 1000)} if water else None,
+        "elevation_m": place.elevation_m,
+    }
+
+
 def _to_json(r, text, fact_sheet, grounding, writer, timings) -> dict:
     from .compose import prepare_list, watch_list
     q, best = r["q"], r["best"]
     hours = r["hours"]
     places = [c for c in r["cands"]]
+    per_place = r["per_place"]
     heat = {
         "hours": [h.isoformat() for h in hours],
-        "places": [{"name": c.name, "lat": c.lat, "lon": c.lon, "kind": c.kind} for c in places],
+        "places": [{"name": c.name, "lat": c.lat, "lon": c.lon, "kind": c.kind,
+                    "osm_url": c.osm_url if c.osm_id else None, "distance_km": round(c.distance_km, 1),
+                    "context": _context_json(c),
+                    "best": _session_json(per_place[c.key], why_bullets(per_place[c.key], 3)) if c.key in per_place else None}
+                   for c in places],
         "scores": [[(r["cells"][c.key].get(h).score if r["cells"][c.key].get(h) else None) for h in hours]
                    for c in places],
     }
@@ -296,7 +315,6 @@ def _to_json(r, text, fact_sheet, grounding, writer, timings) -> dict:
         verdict = "go" if sc >= 65 else ("go_with_care" if sc >= 45 else "not_advised")
     if best.score <= 20:
         verdict = verdict or "not_advised"
-    ctx = best.place.context
     return {
         "status": status,
         "answer": text,
@@ -310,15 +328,7 @@ def _to_json(r, text, fact_sheet, grounding, writer, timings) -> dict:
                   for a in r["avoid"]],
         "prepare": prepare_list(r),
         "watch_for": watch_list(r),
-        "geospatial_context": {
-            "roads_within_1km": [{"name": x.name, "class": x.highway, "distance_m": round(x.distance_km * 1000),
-                                  "direction": x.bearing} for x in (ctx.roads if ctx else [])],
-            "industry_within_3km": [{"name": x.name, "distance_km": round(x.distance_km, 2)} for x in (ctx.industry if ctx else [])],
-            "green_cover_500m_pct": round(ctx.green_fraction * 100) if ctx else None,
-            "nearest_water": ({"name": ctx.nearest_water().name, "distance_m": round(ctx.nearest_water().distance_km * 1000)}
-                              if ctx and ctx.nearest_water() else None),
-            "elevation_m": best.place.elevation_m,
-        },
+        "geospatial_context": _context_json(best.place),
         "heatmap": heat,
         "query": q.summary(),
         "search": {"centre": r["place_label"], "lat": r["origin"][0], "lon": r["origin"][1],

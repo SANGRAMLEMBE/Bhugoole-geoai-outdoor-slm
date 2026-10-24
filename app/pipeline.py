@@ -186,8 +186,9 @@ async def _answer(question, lat, lon, location, now, use_slm) -> dict:
         notes.append("Geospatial context (roads, industry, green cover) could not be fetched this time, so "
                      "those factors were left out rather than guessed.")
     if isinstance(wx_res, Exception) or not wx_res:
+        log.warning("weather forecast unavailable: %s", wx_res)
         return _base(q, "no_data", "I couldn't reach the live weather service just now, and I won't guess the "
-                                   "weather. Please try again in a minute.", t0, error=str(wx_res)[:200])
+                                   "weather. Please try again in a minute.", t0)
     if isinstance(aq_res, Exception) or aq_res is None:
         aq_res = None
         notes.append("Air-quality forecast was unavailable, so air quality is not part of this recommendation.")

@@ -40,6 +40,11 @@ OPEN_METEO_ELEVATION_URL = _env("OPEN_METEO_ELEVATION_URL", "https://api.open-me
 OSRM_URL = _env("OSRM_URL", "https://router.project-osrm.org")
 
 HTTP_TIMEOUT = float(_env("HTTP_TIMEOUT", "25"))
+
+# ---- API limits (protect the endpoint and the free services behind it) ----
+RATE_LIMIT_PER_MIN = int(_env("RATE_LIMIT_PER_MIN", "60"))   # questions per client address per minute
+MAX_QUESTION_CHARS = int(_env("MAX_QUESTION_CHARS", "500"))
+MAX_BODY_BYTES = int(_env("MAX_BODY_BYTES", "16384"))
 OVERPASS_HEDGE_S = float(_env("OVERPASS_HEDGE_S", "3"))     # start the next mirror after this long
 OVERPASS_BUDGET_S = float(_env("OVERPASS_BUDGET_S", "8"))   # total wait for one Overpass query
 OVERPASS_COOLDOWN_S = float(_env("OVERPASS_COOLDOWN_S", "600"))  # skip Overpass this long after a total failure

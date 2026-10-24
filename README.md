@@ -86,6 +86,11 @@ curl -s https://<endpoint>/ask -H 'Content-Type: application/json' \
   -d '{"question": "Where can I go running tomorrow evening near Koregaon Park?"}'
 ```
 
+Limits: up to 60 questions per minute per client address (HTTP 429 with `Retry-After` beyond that), questions up to
+500 characters, request bodies up to 16 KB; `lat`/`lon` are range-checked. Errors come back as JSON, never a stack
+trace. The live endpoint scales out to 4 containers; in our check, 6 simultaneous full answers took 14 s median
+and 18 s at most, and fast-mode answers about 3 s (`scripts/load_check.py`).
+
 Request fields: `question` (also accepted as `query`, `q`, `prompt`, `message`, or a chat-style `messages` list),
 optional `lat`/`lon` or `location` for questions without a place ("Is it okay to cycle to work at 8 AM?"), `fast: true`
 to skip the SLM, `format: "text"` for a plain-text reply, `now` (ISO time) for reproducible tests.

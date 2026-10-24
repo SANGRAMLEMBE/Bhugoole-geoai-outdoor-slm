@@ -33,8 +33,9 @@ image = (
 app = modal.App("bhugoole-geoai", image=image)
 
 
-@app.function(cpu=CPU, memory=4096, timeout=300, scaledown_window=600, max_containers=2)
-@modal.concurrent(max_inputs=4)
+# The model writes one answer at a time per container, so spread simultaneous questions over more containers
+@app.function(cpu=CPU, memory=4096, timeout=300, scaledown_window=600, max_containers=4)
+@modal.concurrent(max_inputs=2)
 @modal.asgi_app()
 def web():
     from app.main import app as fastapi_app

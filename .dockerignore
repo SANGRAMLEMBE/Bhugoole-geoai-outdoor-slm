@@ -1,10 +1,8 @@
-tests
-finetune
-slides
-__pycache__
-*.pyc
-.pytest_cache
-.git
-.venv
-.claude
-osm_build
+# Send only what the image needs to the Docker build context
+*
+!Dockerfile
+!requirements.txt
+!app
+!osm_fallback
+**/__pycache__
+**/*.pyc

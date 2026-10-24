@@ -2,7 +2,7 @@
 
     python scripts/smoke_live.py                       # in-process, template writer only (fast)
     python scripts/smoke_live.py --slm                 # in-process with the SLM (needs llama-cpp-python)
-    python scripts/smoke_live.py --url https://<user>-geoai-outdoor-assistant.hf.space   # deployed endpoint
+    python scripts/smoke_live.py --url https://<your-endpoint>                     # deployed endpoint
 """
 import argparse
 import asyncio

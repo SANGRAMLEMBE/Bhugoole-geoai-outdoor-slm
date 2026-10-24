@@ -1,14 +1,10 @@
-# Files sent to Cloud Build by `gcloud run deploy --source .`
-# (written explicitly so the offline OSM layer, which .gitignore excludes, IS uploaded)
-.git
-.venv
-.claude/
-__pycache__/
-*.pyc
-.pytest_cache/
-tests/
-finetune/
-osm_build/
-slides/
-*.gguf
-*.osm.pbf
+# Upload only what the image needs to Cloud Build (the offline OSM layer included, unlike .gitignore)
+*
+!Dockerfile
+!requirements.txt
+!app/
+!app/**
+!osm_fallback/
+!osm_fallback/**
+**/__pycache__/
+**/*.pyc

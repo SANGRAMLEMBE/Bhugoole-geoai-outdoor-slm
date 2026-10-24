@@ -1,4 +1,4 @@
-"""Deploy the API to a free Hugging Face Docker Space.
+"""Deploy the API to a Hugging Face Docker Space (Docker Spaces need a paid plan since Oct 2026; see modal_app.py).
 
     pip install huggingface_hub
     huggingface-cli login            # a token with write access

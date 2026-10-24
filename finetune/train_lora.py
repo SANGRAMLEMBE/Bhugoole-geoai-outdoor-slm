@@ -1,4 +1,6 @@
-"""QLoRA fine-tune of Qwen2.5-1.5B-Instruct for the parsing job. Runs on a free Colab/Kaggle T4 in ~20-30 min.
+"""QLoRA fine-tune of Qwen2.5-1.5B-Instruct for the parsing job.
+
+Our run took 17 min on one RTX 4500 Ada (24 GB); a free Colab/Kaggle T4 also works, in ~30 min.
 
 In Colab (Runtime -> T4 GPU):
     !git clone <your repo> && cd geoai-outdoor-assistant

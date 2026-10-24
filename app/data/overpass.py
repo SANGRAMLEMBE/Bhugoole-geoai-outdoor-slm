@@ -260,6 +260,10 @@ def _is_industry(tags):
         or tags.get("power") == "plant"
 
 
+UNNAMED_WATER = {"coastline": "sea / coastline", "water": "unnamed lake or pond", "river": "unnamed river",
+                 "riverbank": "unnamed river", "bay": "unnamed bay", "beach": "unnamed beach"}
+
+
 def _is_water(tags):
     return tags.get("natural") in {"water", "bay", "beach", "coastline"} or tags.get("waterway") in {"river", "riverbank"}
 
@@ -310,8 +314,8 @@ async def add_context(cands: list[Candidate], want_power: bool = False) -> None:
                     continue
                 d, b = nearest_point_on_polyline(c.lat, c.lon, coords)
                 if d <= 4.0:
-                    label = tags.get("name") or ("sea / coastline" if tags.get("natural") == "coastline"
-                                                 else tags.get("natural") or tags.get("waterway") or "water")
+                    label = tags.get("name") or UNNAMED_WATER.get(tags.get("natural") or tags.get("waterway"),
+                                                                  "unnamed water body")
                     ctx.water.append(Source(label, "water", d, b))
                     step = max(1, len(coords) // 60)
                     for la, lo in coords[::step]:

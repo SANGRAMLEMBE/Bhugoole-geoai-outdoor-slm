@@ -443,7 +443,8 @@ function render(d, req) {
     return;
   }
   const rec = d.recommendation, g = d.grounding || {}, cond = rec.conditions || {};
-  const summary = (d.answer || "").split(/\n{2,}/)[0];
+  // the answer is the written summary followed by the Carry / Watch / Avoid lists, which have their own cards
+  const summary = (d.answer || "").split(/\n\n\*\*Carry:\*\*/)[0].trim();
   const v = d.verdict && VERDICT[d.verdict];
   const why = (rec.why || []).filter(w => !w.startsWith("caveat")).concat((rec.why || []).filter(w => w.startsWith("caveat")).map(w => w.replace(/^caveat: /, "Keep in mind: ")));
   const avoid = (d.avoid || []).map(a => `${a.label}: ${a.reason}`);
@@ -458,7 +459,7 @@ function render(d, req) {
         <div class="when">${esc(rec.label)}</div>
         <div class="sub">${esc(rec.kind)}${rec.distance_km >= 0.3 ? ` · ${rec.distance_km} km from ${esc(d.search.centre.split(",")[0])}` : ""}${rec.osm_url ? ` · <a href="${esc(rec.osm_url)}" target="_blank" rel="noopener">view on OpenStreetMap</a>` : ""}</div>
       </div>${ring(rec.score)}</div>
-      <div class="answer-text">${md(summary)}</div>
+      <div class="answer-text">${summary.split(/\n{2,}/).map(p => `<p>${md(p)}</p>`).join("")}</div>
       <div class="proof">
         <span class="pill ${g.verified ? "ok" : "warn"}">${g.verified ? "✓ Grounded" : "⚠ Check flagged"} · ${g.numbers_checked ?? 0} numbers, ${g.names_checked ?? 0} names checked</span>
         <span class="pill">${g.writer === "slm" ? "Written by the fine-tuned SLM" : "Template answer (verified)"}</span>

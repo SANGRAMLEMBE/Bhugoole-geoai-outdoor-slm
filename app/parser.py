@@ -85,12 +85,27 @@ def detect_activity(text: str) -> tuple[str | None, str | None]:
     return (best[2], best[3]) if best else (None, None)
 
 
+_AGE = re.compile(
+    r"\b(?:i am|i'm|i’m|im|he is|he's|she is|she's|they are|they're|aged?|age of)\s+(\d{1,3})\b"
+    r"(?!\s*(?:km|kms|k\b|min|mins|minutes|hours?|am|pm|a\.m|p\.m|:|%|people|of us))"
+    r"|\b(\d{1,3})\s*(?:years?|yrs?|y/?o)\b", re.I)
+
+
+def detect_ages(text: str) -> list[int]:
+    """Ages written in the question: "I am 67", "she's 72", "age 70", "my 8 y/o"."""
+    return [int(a or b) for a, b in _AGE.findall(text) if 0 < int(a or b) < 110]
+
+
 def detect_profiles(text: str) -> list[str]:
     found = []
     for pid, p in PROFILES.items():
         if any(re.search(rf"\b{kw}\b", text, re.I) for kw in p.keywords):
             found.append(pid)
-    # "my son and I" style mentions should not make an adult query a child query when an age says otherwise
+    ages = detect_ages(text)
+    if any(a >= 60 for a in ages) and "senior" not in found:
+        found.append("senior")
+    if any(a <= 12 for a in ages) and "child" not in found:
+        found.append("child")
     return found
 
 

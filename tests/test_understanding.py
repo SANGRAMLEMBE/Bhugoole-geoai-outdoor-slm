@@ -40,6 +40,10 @@ def test_messy_inputs():
     p = parse_rules("play cricket in the evening at Shivaji Park", NOW)
     assert p.location == "Shivaji Park"
     assert parse_rules("Is it okay to cycle to work at 8 AM?", NOW).commute
+    # ages count as personal details; clock times and distances do not
+    assert parse_rules("I am 67, can I go for a walk near Aundh tomorrow?", NOW).profiles == ["senior"]
+    assert parse_rules("cycling with my 8 y/o near Baner", NOW).profiles == ["child"]
+    assert parse_rules("I'm 30, 5 km run near Aundh at 6 am", NOW).profiles == []
 
 
 def test_time_windows():

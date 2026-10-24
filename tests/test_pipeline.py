@@ -91,6 +91,29 @@ def test_verifier_semantic_checks():
     assert verify("Near Powai, Powai Ward, Mumbai Zone, Maharashtra, stay away from Katraj Dehu Road Bypass's "
                   "traffic.", road_sheet).ok
     assert not verify("Near Powai, stay away from Eastern Express Highway.", road_sheet).ok
+    blocked = ("OVERALL: NOT ADVISED in this window; every option hits a hard limit.\n"
+               "BEST OPTION: Hill Park (park), Sun 25 Oct 5:00 AM–6:00 AM, score 15/100")
+    assert not verify("Yoga at Hill Park at 5:00 AM on Sun 25 Oct is advised. Avoid the rain.", blocked).ok
+    assert verify("Yoga at Hill Park is not advised on Sun 25 Oct; even 5:00 AM hits a hard limit.", blocked).ok
+    assert not verify("Hill Park is a suitable choice, though yoga is not advised on Sun 25 Oct.", blocked).ok
+    assert not verify("**Best Option: Hill Park**, Sun 25 Oct 5:00 AM", blocked).ok
+
+
+def test_unnamed_venue_ranks_below_named_one(now):
+    from app.activities import ACTIVITIES
+    from app.data.overpass import Candidate, Context
+    from app.profiles import combine
+    from app.scoring import score_cell
+    wx = {"apparent_temperature": 26, "temperature_2m": 25, "precipitation_probability": 0, "wind_speed_10m": 8,
+          "wind_gusts_10m": 12, "uv_index": 2, "weather_code": 1, "wind_direction_10m": 90}
+    t = now.replace(hour=8)
+    named = Candidate("way", 1, "Greens Golf Club", True, 19.1, 72.9, "golf course", 1.0, 0.3, 10.0)
+    unnamed = Candidate("way", 2, "Unnamed golf course", False, 19.1, 72.9, "golf course", 1.0, 0.3, 10.0)
+    for c in (named, unnamed):
+        c.context = Context()
+    golf, nobody = ACTIVITIES["golf"], combine([])
+    assert score_cell(named, t, wx, None, golf, nobody, None, False).score > \
+        score_cell(unnamed, t, wx, None, golf, nobody, None, False).score
 
 
 async def test_slm_path_with_fallback(world, now, monkeypatch):

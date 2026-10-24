@@ -19,11 +19,17 @@ ALLOWED_CAPS = {
 }
 
 # Fact-sheet field labels: an answer that contains them is a copy of the sheet, not an answer.
-_SHEET_LABEL = re.compile(r"(?im)^\s*(?:best option|conditions|reason|caveat|hard limits|alternatives|avoid|"
-                          r"prepare|watch for|overall|note|requested time verdict|search area|time asked)\s*:")
+_SHEET_LABEL = re.compile(r"(?im)^[\s*#>-]*(?:best option|conditions|reason|caveat|hard limits|alternatives|avoid|"
+                          r"prepare|watch for|overall|note|requested time verdict|search area|time asked)\s*\**\s*:")
 _CATS = ["very poor", "satisfactory", "moderate", "severe", "good", "poor"]  # longest match first
 _FACT_CAT = re.compile(r"AQI \d+ \(?(Good|Satisfactory|Moderate|Poor|Very Poor|Severe)\b", re.I)
 _ANSWER_CAT = re.compile(r"\b(?:aqi|air quality|air)\b[^.;,]{0,25}?\b(" + "|".join(_CATS) + r")\b", re.I)
+# When the sheet says "not advised", the answer has to say so too, and must not call it advised or safe
+_SHEET_NOT_ADVISED = re.compile(r"(?m)^(?:OVERALL|REQUESTED TIME VERDICT): NOT ADVISED")
+_SAYS_NOT_ADVISED = re.compile(r"\b(?:not|isn't|is not|aren't) (?:advised|advisable|recommended|safe|a good)\b|"
+                               r"\b(?:unsafe|should not|shouldn't|better to skip)\b", re.I)
+_SAYS_ADVISED = re.compile(r"\b(?:is|are) (?:advised|advisable|recommended|safe|ideal|perfect)\b|"
+                           r"\b(?:suitable|good|great|perfect|ideal) (?:choice|time|option)\b", re.I)
 
 _TIME = re.compile(r"\b(\d{1,2})(?::(\d{2}))?\s*([ap])\.?m\.?\b", re.I)
 _TIME24 = re.compile(r"\b([01]?\d|2[0-3]):([0-5]\d)\b")
@@ -108,6 +114,10 @@ def verify(answer: str, fact_sheet: str) -> Report:
                     i = j + 1
                 else:
                     i += 1
+    # The overall verdict must match the sheet
+    if _SHEET_NOT_ADVISED.search(fact_sheet) and (not _SAYS_NOT_ADVISED.search(answer)
+                                                   or _SAYS_ADVISED.search(answer)):
+        rep.unsupported.append("verdict contradicts the fact sheet (it says not advised)")
     # Copying the fact sheet's layout instead of writing an answer
     if _SHEET_LABEL.search(answer):
         rep.unsupported.append("copied fact-sheet labels")

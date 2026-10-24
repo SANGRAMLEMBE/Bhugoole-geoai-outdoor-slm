@@ -275,6 +275,8 @@ def score_cell(place: Candidate, t: datetime, wx: dict, aq: dict | None, activit
     # ---- venue suitability ----
     if place.quality < 1:
         c.add("venue", -(1 - place.quality) * 15, f"{place.kind} rather than a dedicated venue")
+    if not place.named and place.osm_id:
+        c.add("unnamed", -8, "unnamed on the map, so it may be private or hard to find")
     c.finalize()
     return c
 

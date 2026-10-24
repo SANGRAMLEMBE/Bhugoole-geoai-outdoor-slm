@@ -1,0 +1,8 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+httpx>=0.27
+pydantic>=2.6
+huggingface_hub>=0.23
+tzdata>=2024.1  # IANA zones for zoneinfo on Windows / slim images
+# The SLM runtime (llama-cpp-python) is installed separately in the Dockerfile / README,
+# because it needs a CPU wheel index or a compiler.

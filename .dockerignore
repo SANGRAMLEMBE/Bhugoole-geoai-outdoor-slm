@@ -1,0 +1,10 @@
+tests
+finetune
+slides
+__pycache__
+*.pyc
+.pytest_cache
+.git
+.venv
+.claude
+osm_build

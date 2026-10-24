@@ -1,0 +1,30 @@
+{"q": "Where can I go running tomorrow evening near Koregaon Park?", "activity": "running", "location": "Koregaon Park", "radius_km": 0, "profiles": []}
+{"q": "Best time this weekend for a kids' cricket match within 15 km of Whitefield?", "activity": "cricket", "location": "Whitefield", "radius_km": 15, "profiles": ["child"]}
+{"q": "I have mild asthma, where's good for a morning walk near Powai in the next two days?", "activity": "walking", "location": "Powai", "radius_km": 0, "profiles": ["asthma"]}
+{"q": "Is it okay to cycle to work at 8 AM?", "activity": "cycling", "location": "", "radius_km": 0, "profiles": []}
+{"q": "Planning an outdoor birthday party on Sunday afternoon in Pune, what should I keep in mind?", "activity": "event", "location": "Pune", "radius_km": 0, "profiles": []}
+{"q": "Good place and time for golf on Saturday within 40 km of Andheri?", "activity": "golf", "location": "Andheri", "radius_km": 40, "profiles": []}
+{"q": "Where can I take sunset photos this evening around Bandra?", "activity": "photography", "location": "Bandra", "radius_km": 0, "profiles": []}
+{"q": "Is Saturday or Sunday better for a hike near Lonavala?", "activity": "hiking", "location": "Lonavala", "radius_km": 0, "profiles": []}
+{"q": "When is it safe for my parents to walk outdoors tomorrow in Bengaluru?", "activity": "walking", "location": "Bengaluru", "radius_km": 0, "profiles": ["senior"]}
+{"q": "Outdoor tennis after work today near Hinjewadi, any good spots?", "activity": "tennis", "location": "Hinjewadi", "radius_km": 0, "profiles": []}
+{"q": "five a side football tmrw nite near Andheri West?", "activity": "football", "location": "Andheri West", "radius_km": 0, "profiles": []}
+{"q": "my wife is pregnant, picnic near Cubbon Park sunday?", "activity": "picnic", "location": "Cubbon Park", "radius_km": 0, "profiles": ["pregnancy"]}
+{"q": "birdwatching near Thane creek this weekend", "activity": "birdwatching", "location": "Thane creek", "radius_km": 0, "profiles": []}
+{"q": "kite flying at Juhu beach tomorrow", "activity": "kite", "location": "Juhu beach", "radius_km": 0, "profiles": []}
+{"q": "yoga in the park near Indiranagar tomorrow early morning", "activity": "yoga", "location": "Indiranagar", "radius_km": 0, "profiles": []}
+{"q": "book me a flight to Goa", "activity": "out_of_scope", "location": "", "radius_km": 0, "profiles": []}
+{"q": "can my 8 yr old son and I go cycling around Sector 17 Chandigarh on sunday morning", "activity": "cycling", "location": "Sector 17 Chandigarh", "radius_km": 0, "profiles": ["child"]}
+{"q": "dad had a bypass last year, is an evening stroll at Lalbagh ok tomorrow?", "activity": "walking", "location": "Lalbagh", "radius_km": 0, "profiles": ["heart"]}
+{"q": "trek to sinhagad this sat or sun which is better", "activity": "hiking", "location": "sinhagad", "radius_km": 0, "profiles": []}
+{"q": "need a ground for box cricket near Kharghar tonight, 10 of us", "activity": "cricket", "location": "Kharghar", "radius_km": 0, "profiles": []}
+{"q": "haldi function on the lawn day after tomorrow in Nashik - will weather hold up?", "activity": "event", "location": "Nashik", "radius_km": 0, "profiles": []}
+{"q": "where to see the milky way within 60 km of Bhimtal this week", "activity": "stargazing", "location": "Bhimtal", "radius_km": 60, "profiles": []}
+{"q": "jogging spot near hitech city kal subah?", "activity": "running", "location": "hitech city", "radius_km": 0, "profiles": []}
+{"q": "suggest a good restaurant in Koramangala", "activity": "out_of_scope", "location": "", "radius_km": 0, "profiles": []}
+{"q": "Tennis courts open near Salt Lake for a doubles game Sunday 7am?", "activity": "tennis", "location": "Salt Lake", "radius_km": 0, "profiles": []}
+{"q": "Can grandma join our family picnic at Lodhi Garden this weekend, she's 78", "activity": "picnic", "location": "Lodhi Garden", "radius_km": 0, "profiles": ["senior"]}
+{"q": "golden hour portrait shoot near Fort Kochi tomorrow", "activity": "photography", "location": "Fort Kochi", "radius_km": 0, "profiles": []}
+{"q": "i'm 7 months pregnant, is a short walk at marine drive fine this evening", "activity": "walking", "location": "marine drive", "radius_km": 0, "profiles": ["pregnancy"]}
+{"q": "how's the stock market today", "activity": "out_of_scope", "location": "", "radius_km": 0, "profiles": []}
+{"q": "futsal with office friends within 10 km of Gachibowli after work friday", "activity": "football", "location": "Gachibowli", "radius_km": 10, "profiles": []}

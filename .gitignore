@@ -1,0 +1,11 @@
+.claude/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+finetune/out/
+finetune/data/
+*.gguf
+osm_build/
+*.osm.pbf
+osm_fallback/*.sqlite

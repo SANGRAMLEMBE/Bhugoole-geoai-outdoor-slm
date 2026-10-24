@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where & when to head outdoors</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root {
+    --mist: #E9EEF0; --paper: #F7F9F9; --ink: #18242C; --muted: #5A6B74; --line: #CBD5D9;
+    --contour: #2F6B4F; --amber: #E0A21B; --alert: #B5432F;
+    --good: #2F6B4F; --ok: #8DB06A; --fair: #E0A21B; --poor: #D9783A; --bad: #B5432F;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--mist); color: var(--ink); font: 15px/1.55 Manrope, system-ui, sans-serif; }
+  header { padding: 22px 24px 8px; max-width: 1400px; margin: 0 auto; }
+  h1 { font-family: "Bricolage Grotesque", sans-serif; font-weight: 700; font-size: clamp(26px, 3.4vw, 40px);
+       line-height: 1.05; margin: 0 0 6px; letter-spacing: -0.02em; }
+  header p { margin: 0; color: var(--muted); max-width: 70ch; }
+  main { max-width: 1400px; margin: 0 auto; padding: 16px 24px 40px; display: grid;
+         grid-template-columns: minmax(320px, 520px) 1fr; gap: 20px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; padding: 12px 16px 32px; } header { padding: 18px 16px 4px; } }
+  .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  form { display: grid; gap: 10px; }
+  textarea { width: 100%; min-height: 84px; resize: vertical; font: inherit; padding: 12px; border-radius: 10px;
+             border: 1px solid var(--line); background: #fff; color: var(--ink); }
+  textarea:focus, input:focus, button:focus-visible { outline: 3px solid color-mix(in srgb, var(--contour) 45%, transparent); outline-offset: 1px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  input[type=text] { flex: 1; min-width: 140px; font: inherit; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; }
+  button { font: inherit; font-weight: 700; border: 0; border-radius: 10px; padding: 10px 16px; cursor: pointer; }
+  .primary { background: var(--contour); color: #fff; }
+  .primary[disabled] { opacity: .6; cursor: progress; }
+  .ghost { background: transparent; border: 1px solid var(--line); color: var(--ink); font-weight: 500; }
+  label.check { color: var(--muted); font-size: 13px; display: flex; gap: 6px; align-items: center; }
+  .examples { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .examples button { background: #fff; border: 1px solid var(--line); font-weight: 500; font-size: 13px; padding: 6px 10px; color: var(--ink); }
+  .answer { margin-top: 16px; }
+  .answer h2 { font-family: "Bricolage Grotesque", sans-serif; font-size: 20px; margin: 0 0 8px; }
+  .answer .text p { margin: 0 0 10px; }
+  .verdict { display: inline-block; padding: 3px 10px; border-radius: 999px; font-weight: 700; font-size: 13px; margin-bottom: 10px; }
+  .meta { color: var(--muted); font-size: 13px; }
+  .meta a { color: var(--contour); }
+  details { margin-top: 10px; }
+  summary { cursor: pointer; font-weight: 700; }
+  pre { white-space: pre-wrap; font-size: 12px; background: var(--mist); padding: 10px; border-radius: 8px; max-height: 320px; overflow: auto; }
+  #map { height: 380px; border-radius: 12px; border: 1px solid var(--line); }
+  .grid-wrap { overflow-x: auto; margin-top: 14px; }
+  .grid-title { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .grid-title h2 { font-family: "Bricolage Grotesque", sans-serif; font-size: 22px; margin: 18px 0 2px; letter-spacing: -0.01em; }
+  table.heat { border-collapse: separate; border-spacing: 2px; font-size: 12px; }
+  table.heat th { font-weight: 500; color: var(--muted); padding: 2px 4px; white-space: nowrap; }
+  table.heat th.place { text-align: right; max-width: 220px; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
+  table.heat td { width: 30px; min-width: 30px; height: 26px; border-radius: 4px; text-align: center; color: #fff; font-weight: 700; }
+  table.heat td.best { outline: 3px solid var(--ink); outline-offset: -1px; }
+  table.heat th.daycut { border-left: 2px solid var(--ink); }
+  .legend { display: flex; gap: 4px; align-items: center; font-size: 12px; color: var(--muted); }
+  .legend span { width: 22px; height: 12px; border-radius: 3px; display: inline-block; }
+  .empty { color: var(--muted); padding: 30px 6px; }
+  ul.tight { margin: 4px 0 8px; padding-left: 20px; }
+  .spinner { display: none; color: var(--muted); font-size: 13px; }
+  .busy .spinner { display: inline; }
+  @media (prefers-reduced-motion: no-preference) { .fresh { animation: settle .35s ease-out; } }
+  @keyframes settle { from { opacity: .3 } to { opacity: 1 } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Where and when to head outdoors</h1>
+  <p>Ask in plain words. The assistant fetches live maps, weather and air quality, scores every nearby place hour by hour, and a small language model explains the best option.</p>
+</header>
+<main>
+  <section class="panel">
+    <form id="f">
+      <textarea id="q" aria-label="Your question" placeholder="e.g. I have mild asthma, where's good for a morning walk near Powai in the next two days?"></textarea>
+      <div class="row">
+        <input type="text" id="loc" aria-label="Area (optional)" placeholder="Area, if not in the question (optional)">
+        <button type="button" class="ghost" id="geo">Use my location</button>
+      </div>
+      <div class="row">
+        <button class="primary" id="go" type="submit">Get advice</button>
+        <label class="check"><input type="checkbox" id="fast"> Skip the language model (faster)</label>
+        <span class="spinner" id="spin">Fetching live data and scoring places…</span>
+      </div>
+    </form>
+    <div class="examples" id="ex"></div>
+    <div class="answer" id="ans"><p class="empty">Your recommendation will appear here, with the data it was based on.</p></div>
+  </section>
+  <section class="panel">
+    <div id="map" role="img" aria-label="Map of the places that were scored"></div>
+    <div class="grid-title">
+      <h2>Every place, every hour</h2>
+      <div class="legend" aria-hidden="true">poor <span style="background:var(--bad)"></span><span style="background:var(--poor)"></span><span style="background:var(--fair)"></span><span style="background:var(--ok)"></span><span style="background:var(--good)"></span> great</div>
+    </div>
+    <p class="meta">Each cell is a 0–100 score for starting the activity at that place and hour. The outlined cell is the recommendation.</p>
+    <div class="grid-wrap" id="grid"><p class="empty">Ask a question to see the place × hour scores.</p></div>
+  </section>
+</main>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const EXAMPLES = [
+  "Where can I go running tomorrow evening near Koregaon Park?",
+  "I have mild asthma, where's good for a morning walk near Powai in the next two days?",
+  "Is Saturday or Sunday better for a hike near Lonavala?",
+  "Where can I take sunset photos this evening around Bandra?",
+  "Good place and time for golf on Saturday within 40 km of Andheri?",
+  "Is it okay to cycle to work at 8 AM?"
+];
+const $ = id => document.getElementById(id);
+let coords = null;
+const map = L.map('map', { scrollWheelZoom: false }).setView([19.133, 72.913], 11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18,
+  attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
+const layer = L.layerGroup().addTo(map);
+
+EXAMPLES.forEach(e => { const b = document.createElement('button'); b.type = 'button'; b.textContent = e;
+  b.onclick = () => { $('q').value = e; $('f').requestSubmit(); }; $('ex').appendChild(b); });
+
+$('geo').onclick = () => navigator.geolocation && navigator.geolocation.getCurrentPosition(p => {
+  coords = { lat: p.coords.latitude, lon: p.coords.longitude };
+  $('loc').value = ''; $('loc').placeholder = `Using your location (${coords.lat.toFixed(3)}, ${coords.lon.toFixed(3)})`;
+}, () => { $('loc').placeholder = 'Location permission was denied; type an area instead'; });
+
+function color(s) {
+  if (s == null) return '#d5dcdf';
+  return s >= 82 ? 'var(--good)' : s >= 65 ? 'var(--ok)' : s >= 45 ? 'var(--fair)' : s >= 25 ? 'var(--poor)' : 'var(--bad)';
+}
+function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function md(s) {
+  return esc(s).split(/\n{2,}/).map(p => '<p>' + p.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/_(.+?)_/g, '<em>$1</em>').replace(/\n/g, '<br>') + '</p>').join('');
+}
+const VERDICT = { go: ['Good time to go', 'var(--good)'], go_with_care: ['Okay, with care', 'var(--fair)'],
+                  not_advised: ['Not advised', 'var(--bad)'] };
+
+$('f').onsubmit = async ev => {
+  ev.preventDefault();
+  const question = $('q').value.trim();
+  if (!question) { $('q').focus(); return; }
+  const body = { question, fast: $('fast').checked };
+  if ($('loc').value.trim()) body.location = $('loc').value.trim();
+  else if (coords) Object.assign(body, coords);
+  $('go').disabled = true; document.body.classList.add('busy');
+  try {
+    const r = await fetch('ask', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || r.statusText);
+    render(d);
+  } catch (e) {
+    $('ans').innerHTML = `<p class="empty">The request failed: ${esc(e.message)}. Check that the server is running, then try again.</p>`;
+  } finally { $('go').disabled = false; document.body.classList.remove('busy'); }
+};
+
+function render(d) {
+  let h = '';
+  if (d.verdict && VERDICT[d.verdict]) h += `<span class="verdict" style="background:${VERDICT[d.verdict][1]};color:#fff">${VERDICT[d.verdict][0]}</span>`;
+  h += `<div class="text">${md(d.answer)}</div>`;
+  if (d.status === 'ok') {
+    const g = d.grounding || {};
+    h += `<p class="meta">Written by ${g.writer === 'slm' ? 'the small language model' : 'the template writer'}; `
+       + `${g.verified ? 'every number, time and place checked against fetched data' : 'grounding check flagged: ' + esc((g.unsupported||[]).join(', '))}. `
+       + `Searched ${d.search.places_scored} places × ${d.search.hours_scored} hours within ${d.search.radius_km} km of ${esc(d.search.centre)}. `
+       + `${d.timings.total_s}s.</p>`;
+    h += `<details><summary>Data sources used for this answer</summary><ul class="tight">`
+       + (d.sources || []).map(s => `<li>${esc(s.source)}${s.cached ? ' (cached)' : ''}${s.ok ? '' : ' (failed)'}</li>`).join('')
+       + `</ul><p class="meta">${esc(d.attribution)}</p></details>`;
+    h += `<details><summary>Fact sheet given to the model</summary><pre>${esc(d.fact_sheet)}</pre></details>`;
+    drawMap(d); drawGrid(d);
+  }
+  $('ans').innerHTML = h; $('ans').classList.remove('fresh'); void $('ans').offsetWidth; $('ans').classList.add('fresh');
+}
+
+function drawMap(d) {
+  layer.clearLayers();
+  const best = d.recommendation, pts = [];
+  const bestByPlace = {};
+  d.heatmap.places.forEach((p, i) => { bestByPlace[p.name] = Math.max(...d.heatmap.scores[i].filter(x => x != null), 0); });
+  L.circle([d.search.lat, d.search.lon], { radius: d.search.radius_km * 1000, color: '#5A6B74', weight: 1, fill: false, dashArray: '4 6' }).addTo(layer);
+  d.heatmap.places.forEach(p => {
+    const isBest = p.name === best.place, s = bestByPlace[p.name];
+    L.circleMarker([p.lat, p.lon], { radius: isBest ? 11 : 7, color: isBest ? '#18242C' : '#fff', weight: isBest ? 3 : 1.5,
+      fillColor: getComputedStyle(document.documentElement).getPropertyValue(color(s).slice(4, -1)).trim() || '#888', fillOpacity: .95 })
+      .bindPopup(`<strong>${esc(p.name)}</strong><br>${esc(p.kind)}<br>Best score in window: ${s}`).addTo(layer);
+    pts.push([p.lat, p.lon]);
+  });
+  pts.push([d.search.lat, d.search.lon]);
+  map.fitBounds(L.latLngBounds(pts).pad(0.2));
+}
+
+function drawGrid(d) {
+  const H = d.heatmap, best = d.recommendation;
+  const hrs = H.hours.map(h => new Date(h));
+  const fmtH = t => { const h = parseInt(t.slice(11, 13)); return (h % 12 || 12) + (h < 12 ? 'a' : 'p'); };
+  let head = '<tr><th></th>', prevDay = null;
+  H.hours.forEach(t => { const day = t.slice(0, 10); head += `<th class="${prevDay && day !== prevDay ? 'daycut' : ''}" title="${t.slice(0,16)}">${prevDay !== day ? t.slice(8,10) + '/' + t.slice(5,7) + ' ' : ''}${fmtH(t)}</th>`; prevDay = day; });
+  head += '</tr>';
+  const order = H.places.map((p, i) => i).sort((a, b) => Math.max(...H.scores[b].map(x => x ?? 0)) - Math.max(...H.scores[a].map(x => x ?? 0)));
+  let rows = '';
+  order.forEach(i => {
+    const p = H.places[i];
+    rows += `<tr><th class="place" title="${esc(p.name)}">${esc(p.name.length > 34 ? p.name.slice(0, 33) + '…' : p.name)}</th>`;
+    H.scores[i].forEach((s, j) => {
+      const isBest = p.name === best.place && H.hours[j] === best.start;
+      rows += `<td class="${isBest ? 'best' : ''}" style="background:${color(s)}" title="${esc(p.name)} · ${H.hours[j].slice(0,16)} · ${s ?? 'no data'}">${s == null ? '' : Math.round(s)}</td>`;
+    });
+    rows += '</tr>';
+  });
+  $('grid').innerHTML = `<table class="heat">${head}${rows}</table>`;
+}
+</script>
+</body>
+</html>

@@ -27,6 +27,7 @@ _HOST_MIN_INTERVAL = {
     "nominatim.openstreetmap.org": 1.1,
     "photon.komoot.io": 0.5,
     "overpass-api.de": 1.0,
+    "lz4.overpass-api.de": 1.0,
     "overpass.kumi.systems": 1.0,
     "overpass.private.coffee": 1.0,
     "maps.mail.ru": 1.0,

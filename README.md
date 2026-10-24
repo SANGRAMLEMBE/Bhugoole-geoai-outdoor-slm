@@ -144,7 +144,7 @@ exact slot match rose from 76.7% to 93.3%, and 8/8 answers passed the grounding 
 
 | Source | Used for | Licence / terms | Handling |
 |---|---|---|---|
-| OpenStreetMap via [Overpass API](https://overpass-api.de) (+ maps.mail.ru, kumi.systems, z.overpass-api.de and private.coffee mirrors) | Venues, roads, industry, green cover, water, power lines | ODbL, © OpenStreetMap contributors | One venue query and one batched context query per question; 24 h cache; hedged mirror failover with a 20 s budget, then the offline layer below |
+| OpenStreetMap via [Overpass API](https://overpass-api.de) (+ maps.mail.ru, kumi.systems, z.overpass-api.de and private.coffee mirrors) | Venues, roads, industry, green cover, water, power lines | ODbL, © OpenStreetMap contributors | One venue query and one batched context query per question; 24 h cache; hedged mirror failover with an 8 s budget (then skipped for 10 min), then the offline layer below |
 | [Geofabrik India extract](https://download.geofabrik.de/asia/india.html) (OSM) | Offline copy of the same venue and context features, used **only when Overpass fails** | ODbL, © OpenStreetMap contributors | Built by `scripts/build_osm_fallback.py` into `osm_fallback/osm_india.sqlite` (R-tree index); answers that use it say so and give its data date |
 | [Nominatim](https://nominatim.org) (OSM) | Geocoding place names | ODbL; 1 request/s policy | Throttled to < 1/s, identifying User-Agent, 7-day cache |
 | [Photon](https://photon.komoot.io) (OSM) | Geocoding fallback | ODbL | Only if Nominatim fails |
@@ -165,7 +165,7 @@ No paid or private APIs, no API keys, no scraping. Map data © OpenStreetMap con
   set `AQI_USE_MODELLED_O3=1` to include ozone (8-hour mean).
 * **No live traffic.** There is no free, open live-traffic feed for India; OSRM gives free-flow times and we apply a
   disclosed rush-hour multiplier.
-* **Public Overpass servers are often overloaded.** Mirrors are tried in parallel within a 20 s budget; if all fail,
+* **Public Overpass servers are often overloaded.** Mirrors are tried in parallel within an 8 s budget; if all fail,
   places and surroundings come from the offline Geofabrik layer (a day or so older than live OSM), and the answer
   says so. Weather and air quality are always fetched live.
 * **OSM coverage varies.** Unnamed or unmapped grounds can be missed; we widen the search, include the place the user

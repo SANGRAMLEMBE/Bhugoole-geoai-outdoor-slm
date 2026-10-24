@@ -25,10 +25,11 @@ OVERPASS_URLS = [
     u.strip()
     for u in _env(
         "OVERPASS_URLS",
+        "https://lz4.overpass-api.de/api/interpreter,"
         "https://overpass-api.de/api/interpreter,"
+        "https://z.overpass-api.de/api/interpreter,"
         "https://maps.mail.ru/osm/tools/overpass/api/interpreter,"
         "https://overpass.kumi.systems/api/interpreter,"
-        "https://z.overpass-api.de/api/interpreter,"
         "https://overpass.private.coffee/api/interpreter",
     ).split(",")
     if u.strip()
@@ -39,9 +40,9 @@ OPEN_METEO_ELEVATION_URL = _env("OPEN_METEO_ELEVATION_URL", "https://api.open-me
 OSRM_URL = _env("OSRM_URL", "https://router.project-osrm.org")
 
 HTTP_TIMEOUT = float(_env("HTTP_TIMEOUT", "25"))
-OVERPASS_HEDGE_S = float(_env("OVERPASS_HEDGE_S", "6"))     # start the next mirror after this long
-OVERPASS_BUDGET_S = float(_env("OVERPASS_BUDGET_S", "20"))  # total wait for one Overpass query
-OVERPASS_COOLDOWN_S = float(_env("OVERPASS_COOLDOWN_S", "120"))  # skip Overpass this long after a total failure
+OVERPASS_HEDGE_S = float(_env("OVERPASS_HEDGE_S", "3"))     # start the next mirror after this long
+OVERPASS_BUDGET_S = float(_env("OVERPASS_BUDGET_S", "8"))   # total wait for one Overpass query
+OVERPASS_COOLDOWN_S = float(_env("OVERPASS_COOLDOWN_S", "600"))  # skip Overpass this long after a total failure
 # Offline OSM layer built from a Geofabrik extract (scripts/build_osm_fallback.py).
 # OSM_SOURCE_ORDER: "live_first" (Overpass, then the offline layer), "local_first", or "live_only".
 OSM_LOCAL_DB = _env("OSM_LOCAL_DB", str(Path(__file__).resolve().parents[1] / "osm_fallback" / "osm_india.sqlite"))

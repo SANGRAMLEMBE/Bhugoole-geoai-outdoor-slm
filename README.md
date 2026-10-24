@@ -183,8 +183,7 @@ No paid or private APIs, no API keys, no scraping. Map data © OpenStreetMap con
 
 * Language model in the running assistant: Bhugoole-geoai-outdoor-slm only, a QLoRA fine-tune of
   Qwen2.5-1.5B-Instruct (open weights, ≤ 3B). No hosted LLM is called.
-* AI coding assistants were used as development aids for writing code, as permitted by the rules. They are not part
-  of the running assistant.
+* Development tools: AI coding assistants for writing code (disclosed, as the rules ask).
 * Data sources: listed above.
 
 ## Repository layout

@@ -84,5 +84,4 @@ model = AutoModelForCausalLM.from_pretrained(repo, torch_dtype="auto")
 
 ## Disclosure
 
-AI coding assistants were used as development aids for writing code, as the hackathon rules permit
-(disclosed as they require). They are not part of the running assistant, which uses only this open model.
+The running assistant uses only this open model; no hosted language model is called.

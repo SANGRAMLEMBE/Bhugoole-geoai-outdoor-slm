@@ -164,6 +164,9 @@ all 6 off-topic requests among them were recognised (base: 1); on the original 3
 
 No paid or private APIs, no API keys, no scraping. Map data © OpenStreetMap contributors.
 
+<img width="1072" height="260" alt="image" src="https://github.com/user-attachments/assets/30e5c6c3-220c-4870-81c7-1142216f4d1b" />
+
+
 ## Limitations (honest notes)
 
 * **Air quality is modelled, not measured.** CAMS has ~40 km resolution, so nearby venues share regional AQI; the

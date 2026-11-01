@@ -54,6 +54,9 @@ question ─► 1. understand ─► 2. find places ─► 3. fetch live context
    every number, clock time and proper noun against the fact sheet; a failed draft is regenerated once with feedback,
    then falls back to a deterministic template. The response says which writer was used and what was checked.
 
+
+<img width="1665" height="661" alt="image" src="https://github.com/user-attachments/assets/2f8dcf27-2f72-44e9-b33a-d64c570570cd" />
+
 ### Activities and profiles
 
 Required ten: running/jogging, cycling (leisure or commute), golf, cricket, football/five-a-side, tennis, hiking/nature
